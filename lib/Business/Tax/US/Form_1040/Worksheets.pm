@@ -13,6 +13,7 @@ BEGIN {
     @EXPORT_OK   = qw(
         social_security_benefits
         qualified_dividends_capital_gains_tax
+        pp_qdcgtw
     );
 }
 
@@ -434,6 +435,226 @@ sub qualified_dividends_capital_gains_tax {
     );
     return \@formatted_lines;
 }
+
+=head2 C<pp_qdcgtw()>
+
+=over 4
+
+=item * Purpose
+
+Pretty-print ('pp' for short) the results of
+C<qualified_dividends_capital_gains_tax()> for easier transcription to printed
+worksheet.
+
+    pp_qdcgtw($results, $output_file);
+
+=item * Arguments
+
+List of two arguments:
+
+=over 4
+
+=item *
+
+The array reference which is the return value of
+C<qualified_dividends_capital_gains_tax()>.  Required.
+
+=item *
+
+Path to a plain-text file.  Optional; if not supplied, output will simply go
+to C<STDOUT>.
+
+=back
+
+=item * Return Value
+
+Implicitly returns true value upon success.
+
+=back
+
+=cut
+
+sub pp_qdcgtw {
+    my ($results, $output_file) = @_;
+    croak "First argument to pp_qdcgtw() must be array reference"
+        unless ref($results) eq 'ARRAY';
+    my @output = ();
+    my $line_number = 0;
+    my $one_wide_format     = "% 2s. %-28s  % 2s. % 12.2f";
+    my $two_wide_format     = "% 2s. %-40s        % 2s. % 12.2f";
+    my $three_wide_format   = "% 2s. %-52s              % 2s. % 12.2f";
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Enter Form 1040, line 15",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($one_wide_format => (
+        $line_number,
+        "Enter Form 1040, line 3a",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($one_wide_format => (
+        $line_number,
+        "Sched. D/Form 1040, line 7",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($one_wide_format => (
+        $line_number,
+        "Line 2 - Line 3",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 1 - Line 4",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Filing status amount (1)",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Smaller of lines 1 or 6",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Smaller of lines 5 or 7",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 7 - Line 8",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Smaller of lines 1 or 4",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 9 amount",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 10 - Line 11",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Filing status amount (2)",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Smaller of lines 1 or 13",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 5 + Line 9",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 14 - Line 15",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Smaller of lines 12 or 16",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($three_wide_format => (
+        $line_number,
+        "Line 17 x 15%",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 9 + Line 17",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($two_wide_format => (
+        $line_number,
+        "Line 10 - Line 19",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    $line_number++;
+    push @output, sprintf($three_wide_format => (
+        $line_number,
+        "Line 20 x 20%",
+        $line_number,
+        $results->[$line_number],
+    ) );
+
+    say $_ for @output;
+    return 1;
+}
+
 
 =head1 AUTHOR
 
