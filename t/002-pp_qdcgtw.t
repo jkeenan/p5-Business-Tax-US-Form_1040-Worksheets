@@ -36,16 +36,14 @@ cmp_ok(abs($results->[$k] - $expect->{$k}), '<', 1,
 ###########
 
 {
-    my ($rv, $output_file);
+    my ($rv);
     my $first_arg = { foo => 'bar' };
     local $@;
-    eval { $rv = pp_qdcgtw($first_arg, $output_file); };
+    eval { $rv = pp_qdcgtw($first_arg); };
     like( $@, qr/First argument to pp_qdcgtw\(\) must be array reference/,
         "Got expected error message: bad first argument to pp_qdcgtw"
     );
 }
-
-# Need to test attempt to write to forbidden output file
 
 {
     my ($rv);
