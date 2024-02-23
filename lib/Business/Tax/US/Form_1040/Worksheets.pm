@@ -225,6 +225,20 @@ sub social_security_worksheet_data {
     return $rv->{worksheet_data};
 }
 
+sub _format_lines {
+    my $lines = shift;
+    my @formatted_lines = ();
+    for my $l (@{$lines}) {
+        if (! defined $l or $l eq '0') {
+            push @formatted_lines, $l;
+        }
+        else {
+            push @formatted_lines, sprintf("%.2f" => $l);
+        }
+    }
+    return \@formatted_lines;
+}
+
 sub _social_security_benefits_engine {
     my ($inputs) = @_;
     croak "Argument to social_security_benefits() must be hashref"
@@ -261,6 +275,7 @@ sub _social_security_benefits_engine {
     $data->{status} = $inputs->{status};
     my $filing_year = $inputs->{filing_year}; # TODO add test for numeric; required element
     my @lines = (undef, (undef) x $params{ssb}{$filing_year}{worksheet_line_count});
+    my $formatted_lines;
     $lines[1] = $data->{box5};
     $lines[2] = $lines[1] * $params{ssb}{$filing_year}{ssa_percentage};
     $lines[3] =
@@ -287,18 +302,25 @@ sub _social_security_benefits_engine {
         $data->{s1l20} +
         $data->{s1l23} +
         $data->{s1l25};
-    return { taxable_benefits => 0, worksheet_data => \@lines }
-        if ! ($lines[6] < $lines[5]);
+    if (! ($lines[6] < $lines[5]) ) {
+        $formatted_lines = _format_lines(\@lines);
+        return {
+          taxable_benefits => 0,
+          worksheet_data => $formatted_lines,
+        };
+    }
     $lines[7] = $lines[5] - $lines[6];
     if ($data->{status} eq 'married_sep') {
         $lines[16] = $lines[7] * $params{ssb}{$filing_year}{percentage_b};
         $lines[17] = $lines[1] * $params{ssb}{$filing_year}{percentage_c};
         $lines[18] = sprintf("%.2f" => min($lines[16], $lines[17]));
+        #map { sprintf("%.2f" => $lines[$_]) } (1..$#lines),
         return { taxable_benefits => $lines[18], worksheet_data => \@lines };
     }
     $lines[8] = $data->{status} eq 'married'
         ? $params{ssb}{$filing_year}{married_amt_a}
         : $params{ssb}{$filing_year}{single_amt_a};
+        #map { sprintf("%.2f" => $lines[$_]) } (1..$#lines),
     return { taxable_benefits => 0, worksheet_data => \@lines }
         unless $lines[8] < $lines[7];
     $lines[9] = $lines[7] - $lines[8];
