@@ -6,6 +6,7 @@ use Test::More;
 use Business::Tax::US::Form_1040::Worksheets qw(
     social_security_benefits
     social_security_worksheet_data
+    decimal_lines
 );
 #use Data::Dump qw(dd pp);
 
@@ -124,9 +125,10 @@ note('social_security_worksheet_data()');
       200,      9000,   4500,   4500,   170,
       4670,     28050, "4670.00",
     ];
+    my $formatted_expect = decimal_lines($expect);
 
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -172,8 +174,10 @@ note('social_security_worksheet_data()');
       4670,     28050, "4670.00",
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -219,8 +223,10 @@ note('social_security_worksheet_data()');
       4670,     28050, "4670.00",
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -266,8 +272,10 @@ note('social_security_worksheet_data()');
       undef, undef, undef,
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -313,8 +321,10 @@ note('social_security_worksheet_data()');
       29070,    28050, "28050.00",
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -360,8 +370,10 @@ note('social_security_worksheet_data()');
       1100,     28050, "1100.00",
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 
@@ -407,8 +419,10 @@ note('social_security_worksheet_data()');
       undef,    undef,  undef,
     ];
 
+    my $formatted_expect = decimal_lines($expect);
+
     $worksheet_data = social_security_worksheet_data( $inputs );
-    is_deeply($worksheet_data, $expect,
+    is_deeply($worksheet_data, $formatted_expect,
         "Got expected social security worksheet data");
 }
 

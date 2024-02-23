@@ -15,6 +15,7 @@ BEGIN {
         social_security_worksheet_data
         qualified_dividends_capital_gains_tax
         pp_qdcgtw
+        decimal_lines
     );
 }
 
@@ -29,6 +30,7 @@ Business::Tax::US::Form_1040::Worksheets - IRS Form 1040 worksheets calculations
         social_security_worksheet_data
         qualified_dividends_capital_gains_tax
         pp_qdcgtw
+        decimal_lines
     );
 
     $benefits = social_security_benefits( $inputs );
@@ -225,20 +227,6 @@ sub social_security_worksheet_data {
     return $rv->{worksheet_data};
 }
 
-sub _format_lines {
-    my $lines = shift;
-    my @formatted_lines = ();
-    for my $l (@{$lines}) {
-        if (! defined $l or $l eq '0') {
-            push @formatted_lines, $l;
-        }
-        else {
-            push @formatted_lines, sprintf("%.2f" => $l);
-        }
-    }
-    return \@formatted_lines;
-}
-
 sub _social_security_benefits_engine {
     my ($inputs) = @_;
     croak "Argument to social_security_benefits() must be hashref"
@@ -303,7 +291,7 @@ sub _social_security_benefits_engine {
         $data->{s1l23} +
         $data->{s1l25};
     if (! ($lines[6] < $lines[5]) ) {
-        $formatted_lines = _format_lines(\@lines);
+        $formatted_lines = decimal_lines(\@lines);
         return {
           taxable_benefits => 0,
           worksheet_data => $formatted_lines,
@@ -313,16 +301,23 @@ sub _social_security_benefits_engine {
     if ($data->{status} eq 'married_sep') {
         $lines[16] = $lines[7] * $params{ssb}{$filing_year}{percentage_b};
         $lines[17] = $lines[1] * $params{ssb}{$filing_year}{percentage_c};
-        $lines[18] = sprintf("%.2f" => min($lines[16], $lines[17]));
-        #map { sprintf("%.2f" => $lines[$_]) } (1..$#lines),
-        return { taxable_benefits => $lines[18], worksheet_data => \@lines };
+        $lines[18] = min($lines[16], $lines[17]);
+        $formatted_lines = decimal_lines(\@lines);
+        return {
+            taxable_benefits => $lines[18],
+            worksheet_data => $formatted_lines,
+        };
     }
     $lines[8] = $data->{status} eq 'married'
         ? $params{ssb}{$filing_year}{married_amt_a}
         : $params{ssb}{$filing_year}{single_amt_a};
-        #map { sprintf("%.2f" => $lines[$_]) } (1..$#lines),
-    return { taxable_benefits => 0, worksheet_data => \@lines }
-        unless $lines[8] < $lines[7];
+    unless ($lines[8] < $lines[7]) {
+        $formatted_lines = decimal_lines(\@lines);
+        return {
+            taxable_benefits => 0,
+            worksheet_data => $formatted_lines,
+        };
+    }
     $lines[9] = $lines[7] - $lines[8];
     $lines[10] = $data->{status} eq 'married'
         ? $params{ssb}{$filing_year}{married_amt_b}
@@ -336,8 +331,12 @@ sub _social_security_benefits_engine {
     $lines[15] = $x > 0 ? $x : 0;
     $lines[16] = $lines[14] + $lines[15];
     $lines[17] = $lines[1] * $params{ssb}{$filing_year}{percentage_c};
-    $lines[18] = sprintf("%.2f" => min($lines[16], $lines[17]));
-    return { taxable_benefits => $lines[18], worksheet_data => \@lines };
+    $lines[18] = min($lines[16], $lines[17]);
+    $formatted_lines = decimal_lines(\@lines);
+    return {
+        taxable_benefits => $lines[18],
+        worksheet_data => $formatted_lines,
+    };
 }
 
 =head2 C<qualified_dividends_capital_gains_tax()>
@@ -595,6 +594,47 @@ sub pp_qdcgtw {
 
     say $_ for @output;
     return 1;
+}
+
+=head2 C<decimal_lines()>
+
+=over 4
+
+=item * Purpose
+
+This is a helper subroutine used within both this module and the test suite to
+ensure that all final monetary data is appropriately reported to two decimal
+places.
+
+=item * Arguments
+
+    my $formatted_lines = decimal_lines($lines);
+
+Single array reference holding a list of the values calculated for the various
+lines in a worksheet.
+
+=item * Return Value
+
+Single array reference holding a list of values prepared for entry into the
+worksheets to two decimal places (except for where the value is zero (C<0>).
+Values that are undefined remain so.
+
+=back
+
+=cut
+
+sub decimal_lines {
+    my $lines = shift;
+    my @formatted_lines = ();
+    for my $l (@{$lines}) {
+        if (! defined $l or $l eq '0') {
+            push @formatted_lines, $l;
+        }
+        else {
+            push @formatted_lines, sprintf("%.2f" => $l);
+        }
+    }
+    return \@formatted_lines;
 }
 
 =head1 AUTHOR
