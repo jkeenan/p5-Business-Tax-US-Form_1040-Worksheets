@@ -5,12 +5,13 @@ use Test::More;
 
 use Business::Tax::US::Form_1040::Worksheets qw(
     social_security_benefits
+    social_security_worksheet_data
 );
-use Data::Dump qw(dd pp);
+#use Data::Dump qw(dd pp);
 
+my ($benefits, $worksheet_data);
 
 note('social_security_benefits()');
-my ($benefits);
 {
     local $@;
     eval { $benefits = social_security_benefits([]); };
@@ -41,6 +42,42 @@ my ($benefits);
     local $@;
     my $v = 'foo';
     eval { $benefits = social_security_benefits({ status => $v }); };
+    like( $@, qr/Invalid value for 'status' element/,
+        "Got expected error message: bad argument '$v' for 'status'"
+    );
+}
+
+note('social_security_worksheet_data()');
+{
+    local $@;
+    eval { $benefits = social_security_worksheet_data([]); };
+    like( $@, qr/Argument to social_security_benefits\(\) must be hashref/,
+        "Got expected error message: bad argument to social_security_worksheet_data()"
+    );
+}
+
+{
+    local $@;
+    my $k = 'l1000';
+    eval { $benefits = social_security_worksheet_data({ $k => 789.10 }); };
+    like( $@, qr/Invalid element in hashref passed to social_security_benefits\(\)/,
+        "Got expected error message: bad argument '$k' to social_security_worksheet_data()"
+    );
+}
+
+{
+    local $@;
+    my $v = 'foo';
+    eval { $benefits = social_security_worksheet_data({ status => undef }); };
+    like( $@, qr/Invalid value for 'status' element/,
+        "Got expected error message: 'status' not defined"
+    );
+}
+
+{
+    local $@;
+    my $v = 'foo';
+    eval { $benefits = social_security_worksheet_data({ status => $v }); };
     like( $@, qr/Invalid value for 'status' element/,
         "Got expected error message: bad argument '$v' for 'status'"
     );
@@ -80,6 +117,17 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+    $expect = [
+      undef,
+      33000,    16500,  17700,  0,      34200,
+      0,        34200,  25000,  9200,   9000,
+      200,      9000,   4500,   4500,   170,
+      4670,     28050, "4670.00",
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -115,6 +163,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      33000,    16500,  17700,  0,      34200,
+      0,        34200,  25000,  9200,   9000,
+      200,      9000,   4500,   4500,   170,
+      4670,     28050, "4670.00",
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -150,6 +210,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      33000,    16500,  17700,  0,      34200,
+      0,        34200,  25000,  9200,   9000,
+      200,      9000,   4500,   4500,   170,
+      4670,     28050, "4670.00",
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -185,6 +257,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      33000, 16500, 17700, 0, 34200,
+      35000, undef, undef, undef, undef,
+      undef, undef, undef, undef, undef,
+      undef, undef, undef,
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -220,6 +304,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      33000,    16500,  17700,      0,  34200,
+      0,        34200,  undef,  undef,  undef,
+      undef,    undef,  undef,  undef,  undef,
+      29070,    28050, "28050.00",
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -255,6 +351,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      33000,    16500,  17700,     0,   34200,
+      0,        34200,  32000,  2200,   12000,
+      0,        2200,   1100,   1100,   0,
+      1100,     28050, "1100.00",
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 {
@@ -290,6 +398,18 @@ my ($benefits);
     cmp_ok(abs($benefits - $expect), '<', 1,
         "Result $benefits is within expected tolerance from $expect"
     );
+
+    $expect = [
+      undef,
+      12000,    6000,   12400,      0,  18400,
+      0,        18400,  25000,  undef,  undef,
+      undef,    undef,  undef,  undef,  undef,
+      undef,    undef,  undef,
+    ];
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $expect,
+        "Got expected social security worksheet data");
 }
 
 done_testing();

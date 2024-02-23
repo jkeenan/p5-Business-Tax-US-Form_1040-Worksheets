@@ -12,6 +12,7 @@ BEGIN {
     @ISA         = qw(Exporter);
     @EXPORT_OK   = qw(
         social_security_benefits
+        social_security_worksheet_data
         qualified_dividends_capital_gains_tax
         pp_qdcgtw
     );
@@ -25,12 +26,18 @@ Business::Tax::US::Form_1040::Worksheets - IRS Form 1040 worksheets calculations
 
     use Business::Tax::US::Form_1040::Worksheets qw(
         social_security_benefits
+        social_security_worksheet_data
         qualified_dividends_capital_gains_tax
+        pp_qdcgtw
     );
 
     $benefits = social_security_benefits( $inputs );
 
-    $lines = qualified_dividends_capital_gains_tax($inputs);
+    $worksheet_data = social_security_worksheet_data( $inputs );
+
+    $lines = qualified_dividends_capital_gains_tax( $inputs );
+
+    pp_qdcgtw($lines);
 
 =head1 DESCRIPTION
 
@@ -182,6 +189,44 @@ our %params = (
 
 sub social_security_benefits {
     my ($inputs) = @_;
+    my $rv = _social_security_benefits_engine($inputs);
+    return $rv->{taxable_benefits};
+}
+
+=head2 C<social_security_worksheet_data()>
+
+=over 4
+
+=item * Purpose
+
+Calculate data needed for the purpose of completing all entries (except
+checkboxes) on the Social Security Benefits Worksheet (For filing year 2023,
+these would be lines 6a and 6b on that form.)
+
+    my $worksheet_data = social_security_worksheet_data( $inputs );
+
+=item * Arguments
+
+The same, single hash reference which is supplied to
+C<social_security_benefits()> (I<q.v.> above).
+
+=item * Return Value
+
+Reference to an array holding the data to be entered on lines 1-18 of the SSBW.
+The indexes to the elements of that array correspond to those line numbers on the SSBW.
+
+=back
+
+=cut
+
+sub social_security_worksheet_data {
+    my ($inputs) = @_;
+    my $rv = _social_security_benefits_engine($inputs);
+    return $rv->{worksheet_data};
+}
+
+sub _social_security_benefits_engine {
+    my ($inputs) = @_;
     croak "Argument to social_security_benefits() must be hashref"
         unless ref($inputs) eq 'HASH';
     my @numerics = qw(
@@ -242,18 +287,20 @@ sub social_security_benefits {
         $data->{s1l20} +
         $data->{s1l23} +
         $data->{s1l25};
-    return 0 if ! ($lines[6] < $lines[5]);
+    return { taxable_benefits => 0, worksheet_data => \@lines }
+        if ! ($lines[6] < $lines[5]);
     $lines[7] = $lines[5] - $lines[6];
     if ($data->{status} eq 'married_sep') {
         $lines[16] = $lines[7] * $params{ssb}{$filing_year}{percentage_b};
         $lines[17] = $lines[1] * $params{ssb}{$filing_year}{percentage_c};
-        $lines[18] = min($lines[16], $lines[17]);
-        return $lines[18];
+        $lines[18] = sprintf("%.2f" => min($lines[16], $lines[17]));
+        return { taxable_benefits => $lines[18], worksheet_data => \@lines };
     }
     $lines[8] = $data->{status} eq 'married'
         ? $params{ssb}{$filing_year}{married_amt_a}
         : $params{ssb}{$filing_year}{single_amt_a};
-    return 0 unless $lines[8] < $lines[7];
+    return { taxable_benefits => 0, worksheet_data => \@lines }
+        unless $lines[8] < $lines[7];
     $lines[9] = $lines[7] - $lines[8];
     $lines[10] = $data->{status} eq 'married'
         ? $params{ssb}{$filing_year}{married_amt_b}
@@ -267,8 +314,8 @@ sub social_security_benefits {
     $lines[15] = $x > 0 ? $x : 0;
     $lines[16] = $lines[14] + $lines[15];
     $lines[17] = $lines[1] * $params{ssb}{$filing_year}{percentage_c};
-    $lines[18] = min($lines[16], $lines[17]);
-    return sprintf("%.2f" => $lines[18]);
+    $lines[18] = sprintf("%.2f" => min($lines[16], $lines[17]));
+    return { taxable_benefits => $lines[18], worksheet_data => \@lines };
 }
 
 =head2 C<qualified_dividends_capital_gains_tax()>
@@ -281,7 +328,7 @@ B<Partial calculation> of taxes due per the QDCGTW for the purpose of
 entering the amount of such taxes due on IRS Form 1040.  (For filing
 year 2023, these would be Form 1040 line 16.)
 
-    my $lines = qualified_dividends_capital_gains_tax($inputs);
+    my $lines = qualified_dividends_capital_gains_tax( $inputs );
 
 =item * Arguments
 
