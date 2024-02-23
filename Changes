@@ -2,5 +2,12 @@ Revision history for Perl module Business::Tax::US::Form_1040::Worksheets
 
 0.01 Fri Mar 24 05:25:07 2023
     - original version; created by ExtUtils::ModuleMaker 0.63
+    - pushed to CPAN approx. Wed Feb 21 11:00 2024, but due to CPAN
+      malfunctioning was not indexed and hence did not appear on metacpan or
+      cpantesters
 
+0.02 Fri Feb 23 08:57:32 AM EST 2024
+    - Introduce pp_qdcgtw() for pretty-printing the qd-worksheet
+    - Like 0.01, this version will probably not make it to CPAN, so I'm
+      tagging it and pushing to GH
 
