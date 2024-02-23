@@ -11,3 +11,7 @@ Revision history for Perl module Business::Tax::US::Form_1040::Worksheets
     - Like 0.01, this version will probably not make it to CPAN, so I'm
       tagging it and pushing to GH
 
+0.03 Fri Feb 23 03:49:44 PM EST 2024
+    - Introduce social_security_worksheet_data().
+    - Like preceding versions, this version will probably not make it to CPAN,
+      so I'm tagging it and pushing to GH

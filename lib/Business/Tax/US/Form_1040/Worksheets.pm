@@ -8,7 +8,7 @@ BEGIN {
     use Exporter ();
     use List::Util qw( min );
     our ($VERSION, @ISA, @EXPORT_OK);
-    $VERSION     = '0.02';
+    $VERSION     = '0.03';
     @ISA         = qw(Exporter);
     @EXPORT_OK   = qw(
         social_security_benefits
