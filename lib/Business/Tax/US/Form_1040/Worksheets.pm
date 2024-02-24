@@ -387,6 +387,7 @@ sub pp_ssbw {
     croak "First argument to pp_ssbw() must be array reference"
         unless ref($results) eq 'ARRAY';
 
+        # INCOMPLETE
     return 1;
 }
 
