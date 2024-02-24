@@ -13,6 +13,7 @@ BEGIN {
     @EXPORT_OK   = qw(
         social_security_benefits
         social_security_worksheet_data
+        pp_ssbw
         qualified_dividends_capital_gains_tax
         pp_qdcgtw
         decimal_lines
@@ -337,6 +338,56 @@ sub _social_security_benefits_engine {
         taxable_benefits => $lines[18],
         worksheet_data => $formatted_lines,
     };
+}
+
+=head2 C<pp_ssbw()>
+
+=over 4
+
+=item * Purpose
+
+Pretty-print ('pp' for short) the results of
+C<social_security_worksheet_data()> for easier transcription to printed
+worksheet.
+
+    pp_ssbw($results);
+
+=item * Arguments
+
+The array reference which is the return value of
+C<social_security_worksheet_data()>.  Required.
+
+=item * Return Value
+
+Implicitly returns true value upon success.
+
+=item * Comment
+
+In a future version of this library, this function may take a second argument
+which presumably will be a string holding the path to an output file.  For
+now, the function simply prints to C<STDOUT>.
+
+=back
+
+=cut
+
+#sub _compose_qd_worksheet_line {
+#    my ($line_number, $formatting, $text, $result) = @_;
+#    my $line = sprintf("$formatting" => (
+#        $line_number,
+#        $text,
+#        $line_number,
+#        $result,
+#    ) );
+#    return $line;
+#}
+
+sub pp_ssbw {
+    my ($results) = @_;
+    croak "First argument to pp_ssbw() must be array reference"
+        unless ref($results) eq 'ARRAY';
+
+    return 1;
 }
 
 =head2 C<qualified_dividends_capital_gains_tax()>

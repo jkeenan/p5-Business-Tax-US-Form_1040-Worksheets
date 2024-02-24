@@ -9,6 +9,18 @@ use Business::Tax::US::Form_1040::Worksheets qw(
 );
 use Data::Dump qw(dd pp);
 
+{
+    my ($rv);
+    my $first_arg = { foo => 'bar' };
+    local $@;
+    eval { $rv = pp_qdcgtw($first_arg); };
+    like( $@, qr/First argument to pp_qdcgtw\(\) must be array reference/,
+        "Got expected error message: bad first argument to pp_qdcgtw"
+    );
+}
+
+##########
+
 my $inputs = {
     l15 => 7000.00,
     l3a => 4900.00,
@@ -33,21 +45,5 @@ cmp_ok(abs($results->[$k] - $expect->{$k}), '<', 1,
     "Result for line $k, $results->[$k] is within expected tolerance from $expect->{$k}"
 );
 
-###########
-
-{
-    my ($rv);
-    my $first_arg = { foo => 'bar' };
-    local $@;
-    eval { $rv = pp_qdcgtw($first_arg); };
-    like( $@, qr/First argument to pp_qdcgtw\(\) must be array reference/,
-        "Got expected error message: bad first argument to pp_qdcgtw"
-    );
-}
-
-{
-    my ($rv);
-    $rv = pp_qdcgtw($results);
-    ok($rv, "pp_qdcgtw() returned true value");
-
-}
+my $rv = pp_qdcgtw($results);
+ok($rv, "pp_qdcgtw() returned true value");
