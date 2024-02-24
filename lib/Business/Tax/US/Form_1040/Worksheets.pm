@@ -371,23 +371,60 @@ now, the function simply prints to C<STDOUT>.
 
 =cut
 
-#sub _compose_qd_worksheet_line {
-#    my ($line_number, $formatting, $text, $result) = @_;
-#    my $line = sprintf("$formatting" => (
-#        $line_number,
-#        $text,
-#        $line_number,
-#        $result,
-#    ) );
-#    return $line;
-#}
+sub _compose_worksheet_line {
+    my ($line_number, $formatting, $text, $result) = @_;
+    my $line = sprintf("$formatting" => (
+        $line_number,
+        $text,
+        $line_number,
+        $result,
+    ) );
+    return $line;
+}
 
 sub pp_ssbw {
     my ($results) = @_;
     croak "First argument to pp_ssbw() must be array reference"
         unless ref($results) eq 'ARRAY';
+    my @output = ();
+    my $line_number = 0;
+    my $one_wide_format     = "% 2s. %-40s  % 2s. % 12.2f";
+    my $two_wide_format     = "% 2s. %-52s        % 2s. % 12.2f";
+    my @f = (undef, $one_wide_format, $two_wide_format);
 
-        # INCOMPLETE
+    my $lines = [
+        undef,
+        { formatting => $f[1], text => "Enter sum of 1099s, box 5" },
+        { formatting => $f[2], text => "Line 1 x 50%" },
+        { formatting => $f[2], text => "Sum of 1040 lines 1z 2b 3b 4b 5b 7 8" },
+        { formatting => $f[2], text => "1040 line 2a" },
+        { formatting => $f[2], text => "Line 2 + Line 3 + Line 4" },
+        { formatting => $f[2], text => "Schedule 1, sum lines 11-20, 23, 25" },
+        { formatting => $f[2], text => "Line 5 - Line 6 (or 0)" },
+        { formatting => $f[2], text => "Status (1)" },
+        { formatting => $f[2], text => "Line 7 - Line 8 (or 0)" },
+        { formatting => $f[2], text => "Status (2)" },
+        { formatting => $f[2], text => "Line 9 - Line 10" },
+        { formatting => $f[2], text => "Smaller of lines 9 or 10" },
+        { formatting => $f[2], text => "Line 12 x 50%" },
+        { formatting => $f[2], text => "Smaller of lines 2 or 13" },
+        { formatting => $f[2], text => "Line 11 x 85%" },
+        { formatting => $f[2], text => "Line 14 + Line 15" },
+        { formatting => $f[2], text => "Line 1 x 85%" },
+        { formatting => $f[2], text => "Smaller of lines 16 or 17" },
+    ];
+
+    for (my $i = 0; $i <= $#{$results} -1 ; $i++) {
+        my $j = $i + 1;
+        push @output, _compose_worksheet_line(
+            $j,
+            $lines->[$j]->{formatting},
+            $lines->[$j]->{text},
+            $results->[$j],
+        );
+    }
+
+    say $_ for @output;
     return 1;
 }
 
@@ -587,17 +624,6 @@ now, the function simply prints to C<STDOUT>.
 
 =cut
 
-sub _compose_qd_worksheet_line {
-    my ($line_number, $formatting, $text, $result) = @_;
-    my $line = sprintf("$formatting" => (
-        $line_number,
-        $text,
-        $line_number,
-        $result,
-    ) );
-    return $line;
-}
-
 sub pp_qdcgtw {
     my ($results) = @_;
     croak "First argument to pp_qdcgtw() must be array reference"
@@ -636,7 +662,7 @@ sub pp_qdcgtw {
 
     for (my $i = 0; $i <= $#{$results} -1 ; $i++) {
         my $j = $i + 1;
-        push @output, _compose_qd_worksheet_line(
+        push @output, _compose_worksheet_line(
             $j,
             $lines->[$j]->{formatting},
             $lines->[$j]->{text},
