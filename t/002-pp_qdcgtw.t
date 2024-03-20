@@ -7,7 +7,7 @@ use Business::Tax::US::Form_1040::Worksheets qw(
     qualified_dividends_capital_gains_tax
     pp_qdcgtw
 );
-use Data::Dump qw(dd pp);
+#use Data::Dump qw(dd pp);
 
 {
     my ($rv);

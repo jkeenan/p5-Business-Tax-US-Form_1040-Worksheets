@@ -6,7 +6,7 @@ use Test::More;
 use Business::Tax::US::Form_1040::Worksheets qw(
     qualified_dividends_capital_gains_tax
 );
-use Data::Dump qw(dd pp);
+#use Data::Dump qw(dd pp);
 
 note('qualified_dividends_capital_gains_tax()');
 my ($tax);
