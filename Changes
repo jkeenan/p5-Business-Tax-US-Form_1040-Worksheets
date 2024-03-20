@@ -20,3 +20,8 @@ Revision history for Perl module Business::Tax::US::Form_1040::Worksheets
     - Introduce pp_ssbw() for pretty-printing the ssb-worksheet.
     - Like preceding versions, this version will probably not make it to CPAN,
       so I'm tagging it and pushing to GH
+
+0.05 Fri Feb 23 09:49:50 PM EST 2024
+    - In 0.04, pp_ssbw() wasn't doing any pretty-printing.  Corrected.
+    - Like preceding versions, this version will probably not make it to CPAN,
+      so I'm tagging it and pushing to GH
