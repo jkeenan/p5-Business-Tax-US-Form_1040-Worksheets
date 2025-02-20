@@ -54,17 +54,17 @@ B<Acronyms:>
 =item *
 
 B<SSBW:> I<Social Security Benefits Worksheet>, I<e.g.,> as found on page 32
-of IRS Form 1040 Instructions for filing year 2023.
+of IRS Form 1040 Instructions for filing year 2024.
 
 =item *
 
 B<QDCGTW:> I<Qualified Dividends and Capital Gain Tax Worksheet>, I<e.g.,> as
-found on page 37 of those 2023 Instructions.
+found on page 36 of those 2023 Instructions.
 
 =back
 
 The current version of this library supports the SSBW and most of the QDCGTW
-for filing years 2022 and 2023.  Future versions may extend the support of
+for filing years 2022, 2023 and 2024.  Future versions may extend the support of
 those worksheets forwards and backwords; may offer more complete support for
 the QDCGTW; and may offer support for other worksheets found within the Form
 1040 instructions.
@@ -83,7 +83,7 @@ attorney.  Use at your own risk!>
 
 Calculate taxable social security benefits per the SSBW for the purpose of
 entering the amount of such taxable benefits on IRS Form 1040.  (For filing
-year 2023, these would be lines 6a and 6b on that form.)
+year 2024, these would be lines 6a and 6b on that form.)
 
     my $benefits = social_security_benefits( $inputs );
 
@@ -436,7 +436,7 @@ sub pp_ssbw {
 
 B<Partial calculation> of taxes due per the QDCGTW for the purpose of
 entering the amount of such taxes due on IRS Form 1040.  (For filing
-year 2023, these would be Form 1040 line 16.)
+year 2024, these would be Form 1040 line 16.)
 
     my $lines = qualified_dividends_capital_gains_tax( $inputs );
 
