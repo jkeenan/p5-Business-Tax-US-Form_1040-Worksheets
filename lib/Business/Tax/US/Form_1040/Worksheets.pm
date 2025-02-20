@@ -156,11 +156,15 @@ my %data_2022_ssb = (
 # inspection of 2023 Soc Sec worksheet indicates no change in
 # parameters
 my %data_2023_ssb = map { $_ => $data_2022_ssb{$_} } keys %data_2022_ssb;
+# inspection of 2024 Soc Sec worksheet indicates no change in
+# parameters
+my %data_2024_ssb = map { $_ => $data_2023_ssb{$_} } keys %data_2023_ssb;
 
 our %params = (
     ssb => {
         2022 => { %data_2022_ssb },
         2023 => { %data_2023_ssb },
+        2024 => { %data_2024_ssb },
     },
     qd => {
         2022 => {
@@ -187,6 +191,18 @@ our %params = (
             percentage_a                => 0.15,
             percentage_b                => 0.20,
         },
+        2024 => {
+            worksheet_line_count        => 21,
+            single_or_married_sep_amt_a => 47025,
+            married_amt_a               => 94050,
+            head_of_household_amt_a     => 63000,
+            single_amt_b                => 518900,
+            married_sep_amt_b           => 291850,
+            married_amt_b               => 583750,
+            head_of_household_amt_b     => 551350,
+            percentage_a                => 0.15,
+            percentage_b                => 0.20,
+        },
     },
 );
 
@@ -203,8 +219,7 @@ sub social_security_benefits {
 =item * Purpose
 
 Calculate data needed for the purpose of completing all entries (except
-checkboxes) on the Social Security Benefits Worksheet (For filing year 2023,
-these would be lines 6a and 6b on that form.)
+checkboxes) on the Social Security Benefits Worksheet.
 
     my $worksheet_data = social_security_worksheet_data( $inputs );
 
