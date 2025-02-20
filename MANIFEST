@@ -11,3 +11,5 @@ t/2022/001-social.t
 t/2022/002-qualified.t
 t/2023/001-social.t
 t/2023/002-qualified.t
+t/2024/001-social.t
+t/2024/002-qualified.t
