@@ -93,7 +93,7 @@ my ($tax);
     );
 }
 
-#########
+########
 
 note("single_or_married_sep / single");
 {
@@ -278,23 +278,12 @@ note("worksheet line 14 > worksheet line 15");
     };
     my $expect = {
         5 =>    100000,
-        18 =>   58845,
-        21 =>   21540,
+        18 =>   62835,
+        21 =>   16220,
         1 =>    600000,
     };
     my $results = qualified_dividends_capital_gains_tax($inputs);
-#    for my $j (18, 21, 1) {
-#        cmp_ok($results->[$j], '==', $expect->{$j},
-#            "Got expected result for line $j");
-#    }
-    TODO: {
-        local $TODO = '2024 QD formula not yet ready';
-    for my $j (18, 21) {
-        cmp_ok($results->[$j], '==', $expect->{$j},
-            "Got expected result for line $j");
-    }
-};
-    for my $j (1) {
+    for my $j (18, 21, 1) {
         cmp_ok($results->[$j], '==', $expect->{$j},
             "Got expected result for line $j");
     }
