@@ -59,7 +59,7 @@ of IRS Form 1040 Instructions for filing year 2024.
 =item *
 
 B<QDCGTW:> I<Qualified Dividends and Capital Gain Tax Worksheet>, I<e.g.,> as
-found on page 36 of those 2023 Instructions.
+found on page 36 of those 2024 Instructions.
 
 =back
 
