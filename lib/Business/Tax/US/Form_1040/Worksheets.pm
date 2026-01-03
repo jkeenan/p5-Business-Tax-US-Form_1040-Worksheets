@@ -487,7 +487,7 @@ sub pp_ssbw {
 
 B<Partial calculation> of taxes due per the QDCGTW for the purpose of
 entering the amount of such taxes due on IRS Form 1040.  (For filing
-year 2024, these would be Form 1040 line 16.)
+year 2025, the relevant line on Form 1040 would be line 16.)
 
     my $lines = qualified_dividends_capital_gains_tax( $inputs );
 
@@ -499,8 +499,8 @@ Reference to a hash with 6 required elements: C<l15 l3a sD status1 status2 filin
         l15 => 7000.00,                     # Form 1040, line 15
         l3a => 4900.00,                     # Form 1040, line 3a
         sD =>  1600.00,                     # If filing Schedule D, enter smaller
-                                            # of Schedule D, line 15 o4 16;
-                                            # if not, enter Form 1040, line 7.
+                                            # of Schedule D, line 15 or 16;
+                                            # if not, enter Form 1040, line 7a.
         status1 => 'single_or_married_sep', # Permissible values:
                                             #  single_or_married_sep
                                             #  married
@@ -690,7 +690,7 @@ sub pp_qdcgtw {
         undef,
         { formatting => $f[2], text => "Enter Form 1040, line 15" },
         { formatting => $f[1], text => "Enter Form 1040, line 3a" },
-        { formatting => $f[1], text => "Sched. D/Form 1040, line 7" },
+        { formatting => $f[1], text => "Sched. D/Form 1040, line 7/7a" },
         { formatting => $f[1], text => "Line 2 - Line 3" },
         { formatting => $f[2], text => "Line 1 - Line 4" },
         { formatting => $f[2], text => "Filing status amount (1)" },
