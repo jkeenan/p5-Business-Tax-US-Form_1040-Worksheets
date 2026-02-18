@@ -70,8 +70,8 @@ support for the QDCGTW; and may offer support for other worksheets found
 within the Form 1040 instructions.
 
 B<The accuracy of the calculations in these functions has not been reviewed by
-the Internal Revenue Service, any other tax authority, any accountant or any
-attorney.  Use at your own risk!>
+the Internal Revenue Service, any other tax authority, accountant or attorney.
+Use at your own risk!>
 
 =head1 SUBROUTINES
 
@@ -89,7 +89,8 @@ year 2025, these would be lines 6a and 6b on that form.)
 
 =item * Arguments
 
-Single hash reference with the following keys (values are purely for example):
+Single hash reference with the following keys (values displayed here are
+purely for example):
 
     $inputs = {
         box5    => 30000.00,    # Sum of box 5 on all Forms SSA-1099 and RRB-1099
