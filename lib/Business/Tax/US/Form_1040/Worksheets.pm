@@ -691,7 +691,7 @@ sub pp_qdcgtw {
         undef,
         { formatting => $f[2], text => "Enter Form 1040, line 15" },
         { formatting => $f[1], text => "Enter Form 1040, line 3a" },
-        { formatting => $f[1], text => "Sched. D/Form 1040, line 7/7a" },
+        { formatting => $f[1], text => "Sche. D/Form 1040, line 7/7a" },
         { formatting => $f[1], text => "Line 2 - Line 3" },
         { formatting => $f[2], text => "Line 1 - Line 4" },
         { formatting => $f[2], text => "Filing status amount (1)" },
