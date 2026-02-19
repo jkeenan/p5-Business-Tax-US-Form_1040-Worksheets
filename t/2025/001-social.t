@@ -1,4 +1,4 @@
-# t/2022/001-social.t
+# t/2025/001-social.t
 use 5.14.0;
 use warnings;
 use Test::More;
@@ -13,110 +13,12 @@ use Business::Tax::US::Form_1040::Worksheets qw(
 my ($benefits, $worksheet_data);
 
 note('social_security_benefits()');
-{
-    local $@;
-    eval { $benefits = social_security_benefits([]); };
-    like( $@, qr/Argument to social_security_benefits\(\) must be hashref/,
-        "Got expected error message: bad argument to social_security_benefits()"
-    );
-}
+
+# See t/2022/001-social.t for tests of error conditions, warnings, etc.
+# for social_security_benefits().
 
 {
-    local $@;
-    my $k = 'box5';
-    eval { $benefits = social_security_benefits({ $k => 789.10 }); };
-    like( $@,
-        qr/Must include 4-digit value for 'filing_year' in argument to social_security_benefits\(\)/,
-        "Got expected error message: missing 'filing_year'"
-    );
-}
-
-{
-    local $@;
-    my $k = 'filing_year';
-    eval { $benefits = social_security_benefits({ $k => 789 }); };
-    like( $@,
-        qr/Must include 4-digit value for 'filing_year' in argument to social_security_benefits\(\)/,
-        "Got expected error message: missing 4-digit 'filing_year'"
-    );
-}
-
-{
-    local $@;
-    my $k = 'filing_year';
-    eval { $benefits = social_security_benefits({ $k => 1789 }); };
-    like( $@,
-        qr/'filing_year' must be > 2000/,
-        "Got expected error message: 'filing_year'must be past 2000"
-    );
-}
-
-{
-    local $@;
-    my $k = 'l1000';
-    eval { $benefits = social_security_benefits({ filing_year => 2022, $k => 789.10 }); };
-    like( $@, qr/Invalid element in hashref passed to social_security_benefits\(\)/,
-        "Got expected error message: bad argument '$k' to social_security_benefits()"
-    );
-}
-
-{
-    local $@;
-    my $v = 'foo';
-    eval { $benefits = social_security_benefits({ filing_year => 2022, status => undef }); };
-    like( $@, qr/Invalid value for 'status' element/,
-        "Got expected error message: 'status' not defined"
-    );
-}
-
-{
-    local $@;
-    my $v = 'foo';
-    eval { $benefits = social_security_benefits({ filing_year => 2022, status => $v }); };
-    like( $@, qr/Invalid value for 'status' element/,
-        "Got expected error message: bad argument '$v' for 'status'"
-    );
-}
-
-note('social_security_worksheet_data()');
-{
-    local $@;
-    eval { $benefits = social_security_worksheet_data([]); };
-    like( $@, qr/Argument to social_security_benefits\(\) must be hashref/,
-        "Got expected error message: bad argument to social_security_worksheet_data()"
-    );
-}
-
-{
-    local $@;
-    my $k = 'l1000';
-    eval { $benefits = social_security_worksheet_data({ filing_year => 2022, $k => 789.10 }); };
-    like( $@, qr/Invalid element in hashref passed to social_security_benefits\(\)/,
-        "Got expected error message: bad argument '$k' to social_security_worksheet_data()"
-    );
-}
-
-{
-    local $@;
-    my $v = 'foo';
-    eval { $benefits = social_security_worksheet_data({ filing_year => 2022, status => undef }); };
-    like( $@, qr/Invalid value for 'status' element/,
-        "Got expected error message: 'status' not defined"
-    );
-}
-
-{
-    local $@;
-    my $v = 'foo';
-    eval { $benefits = social_security_worksheet_data({ filing_year => 2022, status => $v }); };
-    like( $@, qr/Invalid value for 'status' element/,
-        "Got expected error message: bad argument '$v' for 'status'"
-    );
-}
-
-####################
-
-{
+    note("basic (single) 1");
     my ($inputs, $expect);
     $inputs = {
         box5    => 33000.00,
@@ -125,7 +27,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         l2a     => 0,
         s1l11     => 0,
@@ -141,7 +43,7 @@ note('social_security_worksheet_data()');
         s1l23     => 0,
         s1l25     => 0,
         status     => 'single',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 4670;
     $benefits = social_security_benefits( $inputs );
@@ -155,6 +57,103 @@ note('social_security_worksheet_data()');
       200,      9000,   4500,   4500,   170,
       4670,     28050, "4670.00",
     ];
+
+    my $formatted_expect = decimal_lines($expect);
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $formatted_expect,
+        "Got expected social security worksheet data");
+}
+
+{
+    note("basic (single) 2");
+    my ($inputs, $expect);
+    $inputs = {
+        box5    => 36000,
+        l1z     => 0,
+        l2b     => 5400,
+        l3b     => 10000,
+        l4b     => 35000,
+        l5b     => 8000,
+        l7a     => 5000,
+        l8      => 500,
+        l2a     => 0,
+        s1l11     => 0,
+        s1l12     => 0,
+        s1l13     => 0,
+        s1l14     => 0,
+        s1l15     => 0,
+        s1l16     => 0,
+        s1l17     => 0,
+        s1l18     => 0,
+        s1l19     => 0,
+        s1l20     => 0,
+        s1l23     => 0,
+        s1l25     => 0,
+        status     => 'single',
+        filing_year => 2025,
+    };
+    $expect = 30600;
+    $benefits = social_security_benefits( $inputs );
+    cmp_ok(abs($benefits - $expect), '<', 1,
+        "Result $benefits is within expected tolerance from $expect"
+    );
+    $expect = [
+        undef,
+        36000,  18000,  63900,  0,      81900,
+        0,      81900,  25000,  56900,  9000,
+        47900,  9000,   4500,   4500,   40715,
+        45215,  30600,  30600,
+    ];
+
+    my $formatted_expect = decimal_lines($expect);
+
+    $worksheet_data = social_security_worksheet_data( $inputs );
+    is_deeply($worksheet_data, $formatted_expect,
+        "Got expected social security worksheet data");
+}
+
+{
+    note("married (filing jointly)");
+    my ($inputs, $expect);
+    $inputs = {
+        box5    => 36000,
+        l1z     => 0,
+        l2b     => 5400,
+        l3b     => 10000,
+        l4b     => 35000,
+        l5b     => 8000,
+        l7a     => 5000,
+        l8      => 500,
+        l2a     => 0,
+        s1l11     => 0,
+        s1l12     => 0,
+        s1l13     => 0,
+        s1l14     => 0,
+        s1l15     => 0,
+        s1l16     => 0,
+        s1l17     => 0,
+        s1l18     => 0,
+        s1l19     => 0,
+        s1l20     => 0,
+        s1l23     => 0,
+        s1l25     => 0,
+        status     => 'married',
+        filing_year => 2025,
+    };
+    $expect = 30600;
+    $benefits = social_security_benefits( $inputs );
+    cmp_ok(abs($benefits - $expect), '<', 1,
+        "Result $benefits is within expected tolerance from $expect"
+    );
+    $expect = [
+        undef,
+        36000,  18000,  63900,  0,      81900,
+        0,      81900,  32000,  49900,  12000,
+        37900,  12000,   6000,  6000,   32215,
+        38215,  30600,  30600,
+    ];
+
     my $formatted_expect = decimal_lines($expect);
 
     $worksheet_data = social_security_worksheet_data( $inputs );
@@ -172,7 +171,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         l2a     => 0,
         s1l11     => undef,
@@ -188,7 +187,7 @@ note('social_security_worksheet_data()');
         s1l23     => undef,
         s1l25     => undef,
         status     => 'single',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 4670;
     $benefits = social_security_benefits( $inputs );
@@ -221,7 +220,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         #l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         #l2a     => 0,
         #s1l11     => undef,
@@ -237,7 +236,7 @@ note('social_security_worksheet_data()');
         #s1l23     => undef,
         #s1l25     => undef,
         status     => 'single',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 4670;
     $benefits = social_security_benefits( $inputs );
@@ -270,7 +269,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         l2a     => 0,
         s1l11     => 5000,
@@ -286,7 +285,7 @@ note('social_security_worksheet_data()');
         s1l23     => 0,
         s1l25     => 0,
         status     => 'single',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 0;
     $benefits = social_security_benefits( $inputs );
@@ -319,7 +318,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         l2a     => 0,
         s1l11     => 0,
@@ -335,7 +334,7 @@ note('social_security_worksheet_data()');
         s1l23     => 0,
         s1l25     => 0,
         status     => 'married_sep',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 28050;
     $benefits = social_security_benefits( $inputs );
@@ -368,7 +367,7 @@ note('social_security_worksheet_data()');
         l3b     => 6200.00,
         l4b     => 0,
         l5b     => 8400.00,
-        l7      => 1700.00,
+        l7a     => 1700.00,
         l8      => 1000.00,
         l2a     => 0,
         s1l11     => 0,
@@ -384,7 +383,7 @@ note('social_security_worksheet_data()');
         s1l23     => 0,
         s1l25     => 0,
         status     => 'married',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 1100;
     $benefits = social_security_benefits( $inputs );
@@ -417,7 +416,7 @@ note('social_security_worksheet_data()');
         l3b     => 2000.00,
         l4b     => 2000.00,
         l5b     => 2000.00,
-        l7      => 2000.00,
+        l7a     => 2000.00,
         l8      => 400.00,
         l2a     => 0,
         s1l11     => 0,
@@ -433,7 +432,7 @@ note('social_security_worksheet_data()');
         s1l23     => 0,
         s1l25     => 0,
         status     => 'single',
-        filing_year => 2022,
+        filing_year => 2025,
     };
     $expect = 0;
     $benefits = social_security_benefits( $inputs );
